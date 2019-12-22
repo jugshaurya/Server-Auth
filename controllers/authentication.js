@@ -1,4 +1,6 @@
 const User = require("../models/user");
+const createToken = require("../utils/createToken");
+
 exports.signup = async (req, res, next) => {
   // TODO: Client Side Verification
   const { name, email, password } = req.body;
@@ -11,11 +13,12 @@ exports.signup = async (req, res, next) => {
     const newUser = new User({
       name,
       email,
-      password
+      password // password will be hashed before `save`
     });
 
+    const token = await createToken({ email });
     await newUser.save();
-    res.status(201).send("User Created");
+    res.status(201).send({ token });
   } catch (error) {
     return next(error);
   }
