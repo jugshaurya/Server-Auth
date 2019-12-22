@@ -2,7 +2,7 @@ const User = require("../models/user");
 const createToken = require("../utils/createToken");
 
 exports.signup = async (req, res, next) => {
-  // TODO: Client Side Verification
+  // TODO: Client Side Verification of req.body
   const { name, email, password } = req.body;
   const user = await User.findOne({ email });
 
@@ -18,12 +18,19 @@ exports.signup = async (req, res, next) => {
 
     const token = await createToken({ email });
     await newUser.save();
-    res.status(201).send({ token });
+    res.status(201).send({ token, message: "New User Created" });
   } catch (error) {
     return next(error);
   }
 };
 
-exports.signin = (req, res, next) => {
-  res.send("Signin");
+exports.login = async (req, res, next) => {
+  try {
+    const token = await createToken(req.user);
+    return res
+      .status(200)
+      .send({ token, message: `Welcome Back ${req.user.name}` });
+  } catch (error) {
+    return next(error);
+  }
 };

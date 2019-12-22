@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const passport = require("passport");
 const mainRouter = require("./routes/mainRouter");
 const mongoose = require("mongoose");
-const passportJWTAuth = require("./passport/passport");
 require("dotenv").config();
 
 // db connection
@@ -14,6 +14,7 @@ mongoose.connect("mongodb://localhost/auth", {
 });
 
 // Middlewares
+app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 if (process.env.NODE_ENV === "development") {
@@ -23,10 +24,6 @@ if (process.env.NODE_ENV === "development") {
 // routers
 app.use("/", mainRouter);
 
-//protected Resources
-app.post("/profile", passportJWTAuth, (req, res) => {
-  res.send("Profile Accesed");
-});
 // error middleware
 app.use((err, req, res, next) => {
   console.log(err);

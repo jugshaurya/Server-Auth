@@ -1,12 +1,13 @@
 const router = require("express").Router();
 const Authentication = require("../controllers/authentication");
-
-router.get("/", (req, res) => {
-  console.log("Hello From Server");
-  res.status(200).send("Sucessfully connected to server");
-});
+const { isUserAuthenticated, localLogin } = require("../passport/passport");
 
 router.post("/signup", Authentication.signup);
-router.post("/signin", Authentication.signin);
+router.post("/login", localLogin, Authentication.login);
+
+// protected Resources
+router.post("/", isUserAuthenticated, (req, res) => {
+  res.status(200).send(`Hello ${req.user.name}`);
+});
 
 module.exports = router;
